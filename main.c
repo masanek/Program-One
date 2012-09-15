@@ -1,11 +1,8 @@
 #include <stdio.h>
- 
+#include "process.h"
+
 int main()
 {
-  int i;
-  for(i = 0; i < 10; i++)
-  {
-    printf("%d\n", i);
-  }
-  return 0;
+  start_process();
+return 0;
 }
