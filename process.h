@@ -1,1 +1,1 @@
-void start_process ();
+void start_process (char *[]);

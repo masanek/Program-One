@@ -1,24 +1,15 @@
-#include  <stdio.h>
-#include  <string.h>
-#include  <sys/types.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include<stdio.h>
 
-#define   MAX_COUNT  200
-#define   BUF_SIZE   100
-
-void start_process()
+void start_process(char *parsedCommand[])
 {
      pid_t  pid;
-     int    i;
-     char *cmd[2];
-     cmd[0] = "ls";
-cmd[1] = "./";
-cmd[2] = NULL;
-     pid = fork();
-   if(pid == 0)
-	{
 
-	execvp(cmd[0],cmd);
-	 
-	}
-     
+     pid = fork();
+     /*This will be True if we are the CHILD*/
+     if(pid == 0)
+     {
+          execvp(parsedCommand[0], parsedCommand);
+     }
 }

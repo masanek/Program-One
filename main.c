@@ -3,6 +3,7 @@
 
 int main()
 {
-  start_process();
-return 0;
+    char *cmd[3] = {"ls","./",NULL};
+    start_process(cmd);
+    return 0;
 }
