@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define MAXLINE 10
+#define MAXLINE 100000
 #define BUFFERSIZE 640
 #define ARGVSIZE 20
 void user_input()
@@ -49,7 +49,7 @@ void user_input()
         count = count + 1;
     }
     /*Need some clean up if like EOF during word. Length check etc*/
-printf("\n%s\n", arryPtr[0]);
+printf("\n%s,%i\n", arryPtr[0], arryPtrPos);
 printf("\n%s\n", arryPtr[1]);
     printf("\n%s\n", arryPtr[2]);
     /*char* temp = (char*)malloc(6 * sizeof(char));
