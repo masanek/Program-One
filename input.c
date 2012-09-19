@@ -6,10 +6,10 @@
 #define MAXLINE 100000
 #define BUFFERSIZE 640
 #define ARGVSIZE 20
-void user_input()
+
+void user_input(char*** arrayPointer, bool* endOfFile)
 {
     /*Set up the temp buffer while reading in characters*/
-    /*Probably could make this a struct?*/
     char* _buffer = (char*)malloc(BUFFERSIZE * sizeof(char));
     int position = 0;
     /*Set up the argv pointer array*/
@@ -19,39 +19,68 @@ void user_input()
     int count = 0;
     /*Current character from user*/
     char current = 'a';
-    
-    /*this needs to be refactored*/
+    /*bool if we are in a word*/
     bool inWord = false;
+
     /*Main loop - should get put into seperate functions...*/
-    while (count < MAXLINE && EOF != current)
+    while (true)
     {
         current = getchar();
-        if(current != ' ' && !inWord)
+        /*we could make a function for these checks but we react differently so maybe not*/
+        if(current == EOF)
         {
-            /*TODO:need to check if we have enough here*/
-            arryPtr[arryPtrPos] = &_buffer[position];
-            inWord = true;
-            arryPtrPos++;
+            *endOfFile=true;
+            /*clean up function*/
+
+            break;
         }
-        /*now handle the character*/
-        if(current != ' ' && inWord) /*TODO:Error Cases*/
+        else if (current == '\n')
         {
-           /*Should refactor this to a read word function*/
-           _buffer[position] = current;
-           position++;
+	    *endOfFile=false;
+            /*clean up function*/
+            
+            break;
         }
-        if(current == ' ' && inWord)
+        else /* Acceptable characters- Probably need to add more checks*/
         {
-           inWord = false;
-           _buffer[position] = '\0';
-           position++;
-        } 
-        count = count + 1;
+		if(current != ' ' && !inWord)
+		{
+		    arryPtr[arryPtrPos] = &_buffer[position];
+		    inWord = true;
+		    arryPtrPos++;
+		}
+                /*The above sets up the arrayPtr and tells below save the char*/
+		if(inWord && current != ' ')
+		{
+		   /*Should refactor this to a read word function*/
+		   _buffer[position] = current;
+		   position++;
+		}
+		if(inWord && current == ' ')
+		{
+		   inWord = false;
+		   _buffer[position] = '\0';
+		   position++;
+		} 
+                /*TODO:check if we have no more space on the buffers and allocate more*/
+                if(arryPtrPos >= ARGVSIZE)
+                {
+                }
+                if(position >= BUFFERSIZE)
+                {
+                }
+                count = count + 1;
+        }
     }
     /*Need some clean up if like EOF during word. Length check etc*/
-printf("\n%s,%i\n", arryPtr[0], arryPtrPos);
-printf("\n%s\n", arryPtr[1]);
-    printf("\n%s\n", arryPtr[2]);
+    arryPtr[arryPtrPos] = NULL;
+    *arrayPointer = arryPtr;
+}
+void cleanUp(char*** arrayPointer, char** bufferPointer, bool stillInWord)
+{
+
+}
+
     /*char* temp = (char*)malloc(6 * sizeof(char));
     char** arryPtr = (char**)malloc(2 * sizeof(char*));
     temp[0] = 't';
@@ -96,5 +125,3 @@ char **arryPtr = (char**)malloc(sizeof(char*));
 	curr = getchar(); 
         count = count + 1;
     }*/
-
- }
