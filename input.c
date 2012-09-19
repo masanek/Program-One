@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "input.h"
+
 #define MAXLINE 100000
 #define BUFFERSIZE 640
 #define ARGVSIZE 20
@@ -31,14 +33,14 @@ void user_input(char*** arrayPointer, bool* endOfFile)
         {
             *endOfFile=true;
             /*clean up function*/
-
+            cleanUp(&arryPtr,arryPtrPos,&_buffer, position, inWord);
             break;
         }
         else if (current == '\n')
         {
 	    *endOfFile=false;
             /*clean up function*/
-            
+            cleanUp(&arryPtr,arryPtrPos,&_buffer, position, inWord);
             break;
         }
         else /* Acceptable characters- Probably need to add more checks*/
@@ -72,56 +74,15 @@ void user_input(char*** arrayPointer, bool* endOfFile)
                 count = count + 1;
         }
     }
-    /*Need some clean up if like EOF during word. Length check etc*/
-    arryPtr[arryPtrPos] = NULL;
     *arrayPointer = arryPtr;
 }
-void cleanUp(char*** arrayPointer, char** bufferPointer, bool stillInWord)
+void cleanUp(char*** arrayPointer, int arrayPos, char** bufferPointer, int buffPos, bool stillInWord)
 {
-
-}
-
-    /*char* temp = (char*)malloc(6 * sizeof(char));
-    char** arryPtr = (char**)malloc(2 * sizeof(char*));
-    temp[0] = 't';
-    temp[1] = '\0';
-    temp[2] = 'a';
-    temp[3] = 'p';
-    temp[4] = '\0';
-
-    arryPtr[0] = &temp[0];
-    arryPtr[1] = &temp[2];
-    printf("\n%s\n", arryPtr[1]);
-    
-    memcpy(temp,"t\0",2);
-    memcpy(&temp[2],"ap\0",3);
-
-char **arryPtr = (char**)malloc(sizeof(char*));
-    int count = 0;
-    char curr;
-    char* complete = "l";
-    char* second = "s";
-    char* third = "p";
-    char* temp = (char*)malloc((strlen(complete)+2) * sizeof(char));
-    complete = strcpy(temp, complete);
-    complete = strcat(temp,second);
-
-    temp = (char*)malloc((strlen(complete)+2) * sizeof(char));
-    complete = strcpy(temp, complete);
-    complete = strcat(temp, third);
-
-    printf("%s", complete);
-
-    printf("%i", arryPtr);
-    arryPtr[0] = complete;
-    
-    char** temp2 = (char**)realloc(arryPtr,sizeof(char*));
-    arryPtr[1] = complete;
-    printf("%s", arryPtr[1]);
-    while (count < MAXLINE && EOF != curr)
+    /*This case is for EOF during typing or when the newline was hit*/
+    if(stillInWord)
     {
-        curr = getchar();
-	printf("%i", count);
-	curr = getchar(); 
-        count = count + 1;
-    }*/
+        /*finish off the current word*/
+         (*bufferPointer)[buffPos] = '\0';
+    }
+    (*arrayPointer)[arrayPos] = NULL;
+}
