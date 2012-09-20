@@ -20,7 +20,7 @@ void user_input(char*** arrayPointer, bool* endOfFile)
     /*Number of characters inputted*/
     int count = 0;
     /*Current character from user*/
-    char current = 'a';
+    int current = 'a'; /* current has to be an int not char, so that EOF can be a non char value*/
     /*bool if we are in a word*/
     bool inWord = false;
 
