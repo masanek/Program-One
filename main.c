@@ -7,10 +7,13 @@
 
 int main()
 {
-    bool stop = false;
-    char ** cmd;
+    /* stop is set when EOF is reached*/
+	bool stop = false;
+    char **cmd;
+
     while(!stop)
     {
+		printf("537sh$ ");
         user_input(&cmd, &stop);
         start_process(cmd);
     }

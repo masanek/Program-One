@@ -6,21 +6,28 @@
 #include "input.h"
 
 #define MAXLINE 100000
-#define BUFFERSIZE 2
-#define ARGVSIZE 1
 
 void user_input(char*** arrayPointer, bool* endOfFile)
 {
+	/*not constants because we need to resize*/
+	int buffersize = 64;
+	int argsize = 10;
+
     /*Set up the temp buffer while reading in characters*/
-    char* buffer = (char*)malloc(BUFFERSIZE * sizeof(char));
+    char* buffer = (char*)malloc(buffersize * sizeof(char));
     int bufferPos = 0;
+	
     /*Set up the argv pointer array*/
-    char** argv = (char**)malloc(ARGVSIZE * sizeof(char*));
+    char** argv = (char**)malloc(argsize * sizeof(char*));
     int argvPos = 0;
+
     /*Number of characters inputted*/
     int count = 0;
+
     /*Current character from user*/
-    int current = 'a'; /* current has to be an int not char, so that EOF can be a non char value*/
+	/*Current has to be an int not char, so that EOF can be a non char value*/
+    int current = 'a'; 
+
     /*bool if we are in a word*/
     bool inWord = false;
     
@@ -28,63 +35,80 @@ void user_input(char*** arrayPointer, bool* endOfFile)
     while (true)
     {
         current = getchar();
+
         /*we could make a function for these checks but we react differently so maybe not*/
-        if(current == EOF)
+        if (current == EOF)
         {
-            *endOfFile=true;
+            *endOfFile = true;
             printf("\n");
             /*clean up function*/
             cleanUp(&argv,argvPos,&buffer, bufferPos, inWord);
             break;
         }
+
         if (current == '\n' && count != 0)
         {
-	    *endOfFile=false;
+			*endOfFile = false;
             /*clean up function*/
             cleanUp(&argv,argvPos,&buffer, bufferPos, inWord);
             break;
         }
-        if(acceptableChar(current)) /* Acceptable characters- Probably need to add more checks*/
+
+		/* Acceptable characters- Probably need to add more checks*/
+        if (acceptableChar(current)) 
         {
-		if(current != ' ' && !inWord)
-		{
-		    argv[argvPos] = &buffer[bufferPos];
-		    inWord = true;
-		    argvPos++;
-		}
-                /*The above sets up the arrayPtr and tells below save the char*/
-		if(inWord && current != ' ')
-		{
-		   /*Should refactor this to a read word function*/
-		   buffer[bufferPos] = current;
-		   bufferPos++;
-		}
-		if(inWord && current == ' ')
-		{
-		   inWord = false;
-		   buffer[bufferPos] = '\0';
-		   bufferPos++;
-		} 
-                /*TODO:check if these fail!*/
-                if(argvPos >= ARGVSIZE)
-                {
-                    argv = realloc(argv,ARGVSIZE);
-                }
-                if(bufferPos >= BUFFERSIZE)
-                {
-                    buffer = realloc(buffer,BUFFERSIZE);
-                }
-                count = count + 1;
+			/* tabs or spaces*/
+			if (!inWord && current != ' ' && current != '\t')
+			{
+			    argv[argvPos] = &buffer[bufferPos];
+			    inWord = true;
+			    argvPos++;
+			}
+			
+			/*The above sets up the arrayPtr and tells below save the char*/
+			if (inWord && current != ' ')
+			{
+			   /*Should refactor this to a read word function*/
+			   buffer[bufferPos] = current;
+			   bufferPos++;
+			}
+
+			if (inWord && current == ' ')
+			{
+			   inWord = false;
+			   buffer[bufferPos] = '\0';
+			   bufferPos++;
+			} 
+
+			/*TODO:check if these fail!*/
+			if (argvPos >= argsize)
+			{
+				argsize *= 2;
+				argv = (char**)realloc(argv, argsize);
+			}
+
+			if (bufferPos >= buffersize)
+			{
+				buffersize *= 2;
+				buffer = (char*)realloc(buffer, buffersize);
+			}
+
+			count = count + 1;
+
         }
     }
     *arrayPointer = argv;
 }
+
+
 bool acceptableChar(char c)
 {
 if(c != '\n')
    return true;
 return false;
 }
+
+
 void cleanUp(char*** arrayPointer, int arrayPos, char** bufferPointer, int buffPos, bool stillInWord)
 {
     /*This case is for EOF during typing or when the newline was hit*/
