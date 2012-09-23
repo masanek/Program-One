@@ -8,14 +8,15 @@
 int main()
 {
     /* stop is set when EOF is reached*/
-	bool stop = false;
+    bool stop = false;
+    bool waitForChild = true; /*unless we get '&' */
     char **cmd;
 
     while(!stop)
     {
-		printf("537sh$ ");
-        user_input(&cmd, &stop);
-        start_process(cmd);
+        printf("537sh$ ");
+        user_input(&cmd, &stop, &waitForChild);
+        start_process(cmd, &waitForChild);
     }
     return 0;
 }
