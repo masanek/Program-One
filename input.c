@@ -7,22 +7,18 @@
 #include "input.h"
 
 #define MAXLINE 100000
+#define STRING_START_L 4
 
-void user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
+/*return 0 ok, -1 error, 1 EOF? */
+int user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
 {
-    int buffersize = 100;
     int argsize = 10;
+    int strSize = STRING_START_L;
 
-    /*Set up the dynamic string array */
-    char* buffer = (char*)malloc(buffersize * sizeof(char));
-    int bufferPos = 0;
-
-    /*Set up the argv array, to point at string array*/
     char** argv = (char**)malloc(argsize * sizeof(char*));
-    int argvPos = 0;
-    
-    int i=0;
+    int argvPos = -1;
 
+    int strPos = 0;
 
     /*Number of characters inputted*/
     int count = 0;
@@ -35,65 +31,63 @@ void user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
 
     /*Always wait for child process until '&' is specified*/
     *waitForChild = true; 
-   /* 
-    for (i=0; i < 25; i++) printf("&argv[%d]: %p\n", i, &argv[i]);
-
-    for (i=0; i < 25; i++) printf("argv[%d]: %p\n", i, argv[i]);
-*/
 
     /*Main loop - should get put into seperate functions...*/
     while (true)
     {
-        /* eat whitespace */
-        while (isblank(current = getchar()))
-        {
-            if (inWord)
-            {
-                buffer[bufferPos++] = '\0';                
-               // bufferPos++;
-            }
-            inWord = false;
-        }
+        current = getchar();
 
+        /* add count != 0 case */
         if (current == EOF)
         {
-            *endOfFile = true;
             printf("\n");
-            cleanUp(&argv,argvPos,&buffer, bufferPos, inWord);
+            if (inWord) 
+                argv[argvPos][strPos] = '\0';
+            
+            argv[++argvPos] = NULL;
             break;
         }
 
-        if (current == '\n')
+        if (current == '\n' && count != 0)
         {
-            *endOfFile = false;
-            cleanUp(&argv,argvPos,&buffer, bufferPos, inWord);
+            argv[argvPos][strPos] = '\0';
             break;
         }
-/*
-        if (current == '&' && !inWord)
+ /*           
+        if (current == '&' && inWord)
         {
+            while (isblank(current = getchar()));
+            if (current == '\n')
+            {
+                argv[argvPos][strPos] = '\0';
+            }
+
             *waitForChild = false;
             break;
         }   
-
         if (current == '&' && inWord)
 */
         /* Acceptable characters*/
         if (acceptableChar(current)) 
         {
-            if (!inWord)
-            {       
-                argv[argvPos++] = &buffer[bufferPos];
-               // argvPos++;
+            /* char following space */
+            if (!isblank(current) && !inWord)
+            {
+                strSize = STRING_START_L;
+                argv[++argvPos] = (char*)malloc(strSize * sizeof(char));
+                strPos = 0;
                 inWord = true;
             }
 
-            /*The above sets up the arrayPtr and tells below save the char*/
-            if (inWord)
+            if (!isblank(current) && inWord)
             {
-                /*Should refactor this to a read word function*/
-                buffer[bufferPos++] = current;
-   //             bufferPos++;
+                argv[argvPos][strPos++] = current;
+            }
+
+            if (isblank(current) && inWord)
+            {
+                inWord = false;
+                argv[argvPos][strPos] = '\0';
             }
         }
 
@@ -101,28 +95,27 @@ void user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
         if (argvPos >= (argsize - 1))
         {
             argsize *= 2;
-            argv = (char**)realloc(argv, 100 * sizeof(char*));
+            argv = (char**)realloc(argv, argsize * sizeof(char*));
             if (argv == NULL) printf("FAILURE");
-
-            /*for (i=0; i < 25; i++) printf("&argv[%d]: %p\n", i, &argv[i]);
-    for (i=0; i < 25; i++) printf("argv[%d]: %p\n", i, argv[i]);*/
         }
 
-        if (bufferPos >= (buffersize - 1))
+        if (strPos >= (strSize - 1))
         {
-            buffersize *= 2;
-            buffer = (char*)realloc(buffer, buffersize * sizeof(char));
+            strSize *= 2;
+            argv[argvPos] = (char*)realloc(argv[argvPos], strSize * sizeof(char));
         }
 
         count = count + 1;
     }
+    *endOfFile = (current == EOF) ? true : false;
     *arrayPointer = argv;
+    return 0;
 }
 
 
 bool acceptableChar(char c)
 {
-if ( isgraph(c))
+if (isprint(c))
    return true;
 return false;
 }

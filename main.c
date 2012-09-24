@@ -11,12 +11,18 @@ int main()
     bool stop = false;
     bool waitForChild = true; /*unless we get '&' */
     char **cmd;
+    int rv = 0;
 
     while(!stop)
     {
         printf("537sh$ ");
-        user_input(&cmd, &stop, &waitForChild);
-        start_process(cmd, &waitForChild);
+        rv = user_input(&cmd, &stop, &waitForChild);
+        if (!rv)
+            start_process(cmd, &waitForChild);
+        else
+            printf("invalid input");
+
+        /*freemem*/
     }
     return 0;
 }
