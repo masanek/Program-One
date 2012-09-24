@@ -48,9 +48,10 @@ int user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
             break;
         }
 
-        if (current == '\n' && count != 0)
+        if (current == '\n')
         {
-            argv[argvPos][strPos] = '\0';
+            if (count != 0)
+                argv[argvPos][strPos] = '\0';
             break;
         }
  /*           
@@ -105,7 +106,7 @@ int user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
             argv[argvPos] = (char*)realloc(argv[argvPos], strSize * sizeof(char));
         }
 
-        count = count + 1;
+        if (!isblank(current)) count++;
     }
     *endOfFile = (current == EOF) ? true : false;
     *arrayPointer = argv;
@@ -115,7 +116,7 @@ int user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
 
 bool acceptableChar(char c)
 {
-if (isprint(c))
+if (isprint(c) || '\t')
    return true;
 return false;
 }
