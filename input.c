@@ -14,9 +14,6 @@ void user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
     int argvSize = 1;
     /*Set up the temp buffer while reading in characters*/
     char* buffer = (char*)malloc(bufferSize * sizeof(char));
-    if(buffer == NULL)
-    {
-    }
     int bufferPos = 0;
     /*We need this incase the buffer gets moved*/
     char* tempBufferPtr;
@@ -74,6 +71,24 @@ void user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
             {
                printf("537sh$ ");
             }
+        }
+        if (current == '&')
+          {
+              *waitForChild = false;
+              while (isblank(current = getchar()));
+              if (current == '\n' || current == EOF)
+              {
+               cleanUp(&argv,argvPos,&buffer, bufferPos, inWord);
+               
+                  if (current == EOF) *endOfFile = true;
+                 break;
+              }
+              else
+              {
+                    printf("\nInvalid Input\n");
+	            rejectInput(&argv, &buffer);
+                    break;
+              }
         }
         if(acceptableChar(current)) /* Acceptable characters- Probably need to add more checks*/
         {
