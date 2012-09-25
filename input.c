@@ -54,20 +54,25 @@ int user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
                 argv[argvPos][strPos] = '\0';
             break;
         }
- /*           
-        if (current == '&' && inWord)
+            
+        if (current == '&')
         {
             while (isblank(current = getchar()));
-            if (current == '\n')
+            if (current == '\n' || current == EOF)
             {
-                argv[argvPos][strPos] = '\0';
+                if (inWord)  argv[argvPos][strPos] = '\0';
+                if (current == EOF) argv[++argvPos] = NULL;
             }
-
+            else
+            {
+                return -1; /* Invalid to have any other char after & */
+            }
+                
             *waitForChild = false;
             break;
         }   
-        if (current == '&' && inWord)
-*/
+    
+
         /* Acceptable characters*/
         if (acceptableChar(current)) 
         {
@@ -121,14 +126,3 @@ if (isprint(c) || '\t')
 return false;
 }
 
-
-void cleanUp(char*** arrayPointer, int arrayPos, char** bufferPointer, int buffPos, bool stillInWord)
-{
-    /*This case is for EOF during typing or when the newline was hit*/
-    if(stillInWord)
-    {
-        /*finish off the current word*/
-         (*bufferPointer)[buffPos] = '\0';
-    }
-    (*arrayPointer)[arrayPos] = NULL;
-}
