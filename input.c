@@ -14,7 +14,9 @@ void user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
     int argvSize = 1;
     /*Set up the temp buffer while reading in characters*/
     char* buffer = (char*)malloc(bufferSize * sizeof(char));
-
+    if(buffer == NULL)
+    {
+    }
     int bufferPos = 0;
     /*We need this incase the buffer gets moved*/
     char* tempBufferPtr;
@@ -75,17 +77,19 @@ void user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
         }
         if(acceptableChar(current)) /* Acceptable characters- Probably need to add more checks*/
         {
-		if(current != ' ' && !inWord)
+		if(!isblank(current) && !inWord)
 		{
-		    argv[argvPos] = &buffer[bufferPos];
+		    argv[argvPos] = &(buffer[bufferPos]);
 		    inWord = true;
 		    argvPos++;
+                    count = count + 1;
 		}
                 /*The above sets up the arrayPtr and tells below save the char*/
 		if(inWord && !isblank(current))
 		{
 		   buffer[bufferPos] = current;
 		   bufferPos++;
+                   count = count + 1;
 		}
 		if(inWord && isblank(current))
 		{
@@ -111,7 +115,6 @@ void user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
                     buffer = tempBufferPtr;
                     tempBufferPtr = NULL;
                 }
-                count = count + 1;
         }
     }
     if(count ==1)
@@ -120,7 +123,7 @@ void user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
 }
 bool acceptableChar(char c)
 {
-if(isprint(c) && c != '\n' && c!= EOF && c!= '\0')
+if(c != '\n' && c!= EOF && c!= '\0' && isprint(c))
    return true;
 return false;
 }

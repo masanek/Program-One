@@ -15,9 +15,12 @@ void start_process(char **parsedCommand, bool waitForChild)
      /*This will be True if we are the CHILD*/
      if(0 == pid)
      {
+          if(parsedCommand[0] != NULL)
+          {
           execvp(parsedCommand[0], parsedCommand);
           printf("Command not found\n");
           _exit(-1);
+          }
      }
      else if(-1 == pid)
      {
