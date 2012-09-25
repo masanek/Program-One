@@ -40,11 +40,21 @@ void user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
         /*we could make a function for these checks but we react differently so maybe not*/
         if(EOF == current)
         {
-            *endOfFile=true;
+*endOfFile=true;
+            if(0 != count)
+            {
             printf("\n");
             /*clean up function*/
             cleanUp(&argv,argvPos,&buffer, bufferPos, inWord);
             break;
+            }
+else
+{
+    free(buffer);
+    free(argv);
+    argv=NULL;
+    break;
+}
         }
         if (current == '\n')
         {
@@ -105,7 +115,7 @@ void user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
 }
 bool acceptableChar(char c)
 {
-if(c != '\n')
+if(c != '\n' && c!= EOF)
    return true;
 return false;
 }

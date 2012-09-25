@@ -20,7 +20,8 @@ int main()
         if(cmd != NULL)
         {
             start_process(cmd, waitForChild);
-            /*Free up memory. probably need to do a deep free*/
+            free(cmd[0]);
+            free(cmd);
         }
     }
     return 0;
