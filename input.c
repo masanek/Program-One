@@ -14,11 +14,13 @@ void user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
     int argvSize = 1;
     /*Set up the temp buffer while reading in characters*/
     char* buffer = (char*)malloc(bufferSize * sizeof(char));
+
     int bufferPos = 0;
     /*We need this incase the buffer gets moved*/
     char* tempBufferPtr;
     /*Set up the argv pointer array*/
     char** argv = (char**)malloc(argvSize * sizeof(char*));
+
     int argvPos = 0;
     /*Number of characters inputted*/
     int count = 0;
@@ -26,40 +28,41 @@ void user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
     int current = 'a'; /* current has to be an int not char, so that EOF can be a non char value*/
     /*bool if we are in a word*/
     bool inWord = false;
-    
+
     /*Main loop- Doesnt yet keep scannign to clean out buffer*/
     while (true)
     {
         current = getchar();
         if(count > MAXLINE || '\0' == current)
         {
-            printf("Invalid Input\n");
+            printf("\nInvalid Input\n");
 	    rejectInput(&argv, &buffer);
             break;
         }
         /*we could make a function for these checks but we react differently so maybe not*/
         if(EOF == current)
         {
-*endOfFile=true;
+            printf("\n");
+            *endOfFile=true;
             if(0 != count)
             {
-            printf("\n");
-            /*clean up function*/
-            cleanUp(&argv,argvPos,&buffer, bufferPos, inWord);
-            break;
+                /*clean up function*/
+                cleanUp(&argv,argvPos,&buffer, bufferPos, inWord);
+                break;
             }
-else
-{
-    free(buffer);
-    free(argv);
-    argv=NULL;
-    break;
-}
+            else
+            {
+                free(buffer);
+                free(argv);
+                argv=NULL;
+                break;
+            }
         }
         if (current == '\n')
         {
             if(0 != count)
             {
+               printf("\n");
 	       *endOfFile=false;
                /*clean up function*/
                cleanUp(&argv,argvPos,&buffer, bufferPos, inWord);
@@ -81,7 +84,6 @@ else
                 /*The above sets up the arrayPtr and tells below save the char*/
 		if(inWord && !isblank(current))
 		{
-		   /*Should refactor this to a read word function*/
 		   buffer[bufferPos] = current;
 		   bufferPos++;
 		}
@@ -107,15 +109,18 @@ else
                         updateArgv(&argv, tempBufferPtr, bufferPos);
                     }
                     buffer = tempBufferPtr;
+                    tempBufferPtr = NULL;
                 }
                 count = count + 1;
         }
     }
+    if(count ==1)
+       printf("%i",buffer[0]);
     *arrayPointer = argv;
 }
 bool acceptableChar(char c)
 {
-if(c != '\n' && c!= EOF)
+if(isprint(c) && c != '\n' && c!= EOF && c!= '\0')
    return true;
 return false;
 }

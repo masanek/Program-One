@@ -16,8 +16,7 @@ void start_process(char **parsedCommand, bool waitForChild)
      if(0 == pid)
      {
           execvp(parsedCommand[0], parsedCommand);
-          printf("%s: command not found\n", parsedCommand[0]);
-          printf("537sh$ ");
+          printf("Command not found\n");
           _exit(-1);
      }
      else if(-1 == pid)
