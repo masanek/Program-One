@@ -29,5 +29,5 @@ void start_process(char **parsedCommand, bool waitForChild)
      else if(waitForChild){
          waitpid(pid, &status, 0);
      }
-     
+
 }
