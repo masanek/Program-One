@@ -24,10 +24,10 @@ void start_process(char **parsedCommand, bool waitForChild)
      }
      else if(-1 == pid)
      {
-         printf("fork failed"); /*fail gracefully*/
+         printf("New Process Could Not Be Started\n"); /*fail gracefully*/
      }
      else if(waitForChild){
          waitpid(pid, &status, 0);
      }
-
+     
 }

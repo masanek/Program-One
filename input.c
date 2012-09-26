@@ -14,12 +14,13 @@ void user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
     int argvSize = 1;
     /*Set up the temp buffer while reading in characters*/
     char* buffer = (char*)malloc(bufferSize * sizeof(char));
+
     int bufferPos = 0;
     /*We need this incase the buffer gets moved*/
     char* tempBufferPtr;
     /*Set up the argv pointer array*/
     char** argv = (char**)malloc(argvSize * sizeof(char*));
-
+    char** tempArgvPtr;
     int argvPos = 0;
     /*Number of characters inputted*/
     int count = 0;
@@ -27,9 +28,25 @@ void user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
     int current = 'a'; /* current has to be an int not char, so that EOF can be a non char value*/
     /*bool if we are in a word*/
     bool inWord = false;
+    bool setup = true;
 
+    if(buffer == NULL)
+    {
+       if(argv != NULL)
+       {
+           free(argv);
+       }
+       printf("Memory Problem");
+       return;
+    }
+    if(argv == NULL)
+    {
+       printf("Memory Problem");
+       free(buffer);
+       return;
+    }
     /*Main loop- Doesnt yet keep scannign to clean out buffer*/
-    while (true)
+    while (setup)
     {
         current = getchar();
         if(count > MAXLINE || '\0' == current)
@@ -116,13 +133,32 @@ void user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
                 if(argvPos >= argvSize)
                 {
     		    argvSize = argvSize*2;
-                    argv = realloc(argv,argvSize * sizeof(char*));
+                    tempArgvPtr = realloc(argv,argvSize * sizeof(char*));
+ 		    if(tempArgvPtr != NULL)
+	            {
+                         argv = tempArgvPtr;
+                    }
+                    else
+                    {
+			/*It broke*/
+			printf("Memory Issue\n");
+			rejectInput(&argv,&buffer);
+			break;
+                    }
                 }
                 if(bufferPos >= bufferSize)
                 {
                     bufferSize = bufferSize*2;
                     tempBufferPtr = realloc(buffer,bufferSize * sizeof(char));
                     /*Realloc moved our buffer so we need to fix argv*/
+                  
+                    if(tempBufferPtr == NULL)
+                    {
+			/*It broke*/
+			printf("Memory Issue\n");
+			rejectInput(&argv,&buffer);
+			break;
+                    } 
                     if(tempBufferPtr != buffer)
                     {
                         updateArgv(&argv, tempBufferPtr, bufferPos);
@@ -132,8 +168,6 @@ void user_input(char*** arrayPointer, bool* endOfFile, bool* waitForChild)
                 }
         }
     }
-    if(count ==1)
-       printf("%i",buffer[0]);
     *arrayPointer = argv;
 }
 bool acceptableChar(char c)
